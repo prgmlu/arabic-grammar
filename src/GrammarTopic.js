@@ -23,7 +23,8 @@ function GrammarTopic() {
   };
 
   return (
-    <div>
+    <div >
+      <h1>Select Grammar Topics</h1>
       <ul>
         {rules.map(rule => (
           <li key={rule.id}>
@@ -36,7 +37,7 @@ function GrammarTopic() {
           </li>
         ))}
       </ul>
-      <button onClick={handleGoClick}>Go</button>  // new button
+      <button onClick={handleGoClick} disabled={selectedRules.length === 0}>Go</button>
     </div>
   );
 }
