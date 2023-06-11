@@ -5,73 +5,73 @@ import GrammarTopic from './GrammarTopic';
 import RuleDisplay from './RuleDisplay';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { setRules } from './RuleSlice';
-import GrammarTopic from './GrammarTopic';
-import RuleDisplay from './RuleDisplay';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
 function App() {
   const dispatch = useDispatch();
-  
-  const mockFetchRules = () => [
-    { 
-      id: 1, 
-      topic: 'Noun Case Endings',
-      rule: 'In Arabic, nouns can have different case endings...',
-      highlightColor: '#FF0000', 
-      sound: 'https://tmpfiles.org/dl/1533068/alt-jbreezeblocks.mp3',
-      examples: [
-        {
-          sentence: 'This is a test sentence.',
-          highlightedIndices: [0, 1, 2]
-        },
-        {
-          sentence: 'This is another test sentence.',
-          highlightedIndices: [5, 6, 7]
-        }
-      ]
-    },
-    { 
-      id: 2, 
-      topic: 'Verb Conjugation',
-      rule: 'Arabic verbs change based on the subject...',
-      highlightColor: '#00FF00', 
-      sound: 'https://tmpfiles.org/dl/1533068/alt-jbreezeblocks.mp3', 
-      examples: [
-        {
-          sentence: 'This is a test sentence for verb conjugation.',
-          highlightedIndices: [0, 1, 2]
-        },
-        {
-          sentence: 'This is another test sentence for verb conjugation.',
-          highlightedIndices: [5, 6, 7]
-        }
-      ]
-    },
-    { 
-      id: 3, 
-      topic: 'Adjective Agreement',
-      rule: 'Adjectives in Arabic agree with the noun they modify...',
-      highlightColor: '#0000FF', 
-      sound: 'https://tmpfiles.org/dl/1533068/alt-jbreezeblocks.mp3', 
-      examples: [
-        {
-          sentence: 'This is a test sentence for adjective agreement.',
-          highlightedIndices: [0, 1, 2]
-        },
-        {
-          sentence: 'This is another test sentence for adjective agreement.',
-          highlightedIndices: [5, 6, 7]
-        }
-      ]
-    }
-  ];
+
+  const mockFetchRules = () => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve([
+          { 
+            id: 1, 
+            topic: 'Noun Case Endings',
+            rule: 'In Arabic, nouns can have different case endings...',
+            highlightColor: '#FF0000', 
+            sound: 'https://tmpfiles.org/dl/1533068/alt-jbreezeblocks.mp3',
+            examples: [
+              {
+                sentence: 'This is a test sentence.',
+                highlightedIndices: [0, 1, 2]
+              },
+              {
+                sentence: 'This is another test sentence.',
+                highlightedIndices: [5, 6, 7]
+              }
+            ]
+          },
+          { 
+            id: 2, 
+            topic: 'Verb Conjugation',
+            rule: 'Arabic verbs change based on the subject...',
+            highlightColor: '#00FF00', 
+            sound: 'https://tmpfiles.org/dl/1533068/alt-jbreezeblocks.mp3', 
+            examples: [
+              {
+                sentence: 'This is a test sentence for verb conjugation.',
+                highlightedIndices: [0, 1, 2]
+              },
+              {
+                sentence: 'This is another test sentence for verb conjugation.',
+                highlightedIndices: [5, 6, 7]
+              }
+            ]
+          },
+          { 
+            id: 3, 
+            topic: 'Adjective Agreement',
+            rule: 'Adjectives in Arabic agree with the noun they modify...',
+            highlightColor: '#0000FF', 
+            sound: 'https://tmpfiles.org/dl/1533068/alt-jbreezeblocks.mp3', 
+            examples: [
+              {
+                sentence: 'This is a test sentence for adjective agreement.',
+                highlightedIndices: [0, 1, 2]
+              },
+              {
+                sentence: 'This is another test sentence for adjective agreement.',
+                highlightedIndices: [5, 6, 7]
+              }
+            ]
+          }
+        ]);
+      }, 200);
+    });
+  };
 
   useEffect(() => {
-    const rules = mockFetchRules();
-    dispatch(setRules(rules));
+    mockFetchRules().then((rules) => {
+      dispatch(setRules(rules));
+    });
   }, [dispatch]);
 
   const rules = useSelector(state => state.rule);
@@ -87,7 +87,6 @@ function App() {
 }
 
 export default App;
-
 
 
 import React from 'react';
@@ -146,7 +145,8 @@ function GrammarTopic() {
 }
 
 export default GrammarTopic;
-import React from 'react';
+// RuleDisplay.js
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import SentenceDisplay from './SentenceDisplay';
@@ -155,6 +155,7 @@ function RuleDisplay() {
   const { topicId } = useParams();
   const rules = useSelector(state => state.rule);
   const rule = rules.find(rule => rule.id === parseInt(topicId));
+  const [currentExampleIndex, setCurrentExampleIndex] = useState(0);  // new state
 
   // If the rule is not found, display a loading message
   if (!rule) return <div>Loading...</div>;
@@ -162,16 +163,27 @@ function RuleDisplay() {
   // Make sure that the rule has an examples array before trying to map over it
   if (!rule.examples) return <div>No examples found for this rule.</div>;
 
+  const handleNextExample = () => {
+    if (currentExampleIndex < rule.examples.length - 1) {
+      setCurrentExampleIndex(currentExampleIndex + 1);
+    }
+  };
+
+  const handlePrevExample = () => {
+    if (currentExampleIndex > 0) {
+      setCurrentExampleIndex(currentExampleIndex - 1);
+    }
+  };
+
   return (
     <div>
       <h1>{rule.topic}</h1>
-      {rule.examples.map((example, index) => (
-        <SentenceDisplay key={index} example={example} rule={rule} />
-      ))}
+      <SentenceDisplay example={rule.examples[currentExampleIndex]} rule={rule} />
+      <button onClick={handlePrevExample}>Prev</button>
+      <button onClick={handleNextExample}>Next</button>
     </div>
   );
 }
-
 
 export default RuleDisplay;
 
@@ -245,5 +257,5 @@ export default SentenceDisplay;
 
 
 please always provide copy/paste friendly code so i can just copy it to my previous structure and it works right away, please always provide no bugs
-please feel free to treat this code as it is yours, so edit left and right IF needed, just make sure to plan it out correctly , then provide copy/paste friendly code as mentioned above as one of the top criterias
-
+please feel free to treat this code as it is yours, so edit left and right IF needed, just make sure to plan it out correctly , then provide copy/paste friendly code as mentioned above as one of the top criterias(please always keep this criters from now on in all of your replies (important))
+please never say "//... other code remains the same ..." other similar comments, always fill in yourself
