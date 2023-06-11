@@ -205,5 +205,45 @@ function SentenceDisplay({ example, rule }) {
 
 export default SentenceDisplay;
 
+import React from 'react';
+
+function PlayButton({ handleClick }) {
+  return <button onClick={handleClick}>Play</button>;
+}
+
+export default PlayButton;
+
+import React, { useRef, useEffect } from 'react';
+import PlayButton from './PlayButton';
+
+function SentenceDisplay({ example, rule }) {
+  const audioRef = useRef();
+
+  useEffect(() => {
+    audioRef.current = new Audio(rule.sound);
+  }, [rule]);
+
+  const handlePlaySound = () => {
+    audioRef.current.play();
+  };
+
+  const highlightedSentence = example.sentence.split('').map((char, index) => 
+    example.highlightedIndices.includes(index) 
+      ? <span style={{ color: rule.highlightColor, backgroundColor: 'lightgrey' }}>{char}</span> 
+      : char
+  );
+
+  return (
+    <div>
+      <p>{highlightedSentence}</p>
+      <PlayButton handleClick={handlePlaySound} />
+    </div>
+  );
+}
+
+export default SentenceDisplay;
+
+
 please always provide copy/paste friendly code so i can just copy it to my previous structure and it works right away, please always provide no bugs
+please feel free to treat this code as it is yours, so edit left and right IF needed, just make sure to plan it out correctly , then provide copy/paste friendly code as mentioned above as one of the top criterias
 

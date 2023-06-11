@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from 'react';
+import PlayButton from './PlayButton';
 
 function SentenceDisplay({ example, rule }) {
   const audioRef = useRef();
@@ -7,7 +8,7 @@ function SentenceDisplay({ example, rule }) {
     audioRef.current = new Audio(rule.sound);
   }, [rule]);
 
-  const handleSentenceClick = () => {
+  const handlePlaySound = () => {
     audioRef.current.play();
   };
 
@@ -18,9 +19,10 @@ function SentenceDisplay({ example, rule }) {
   );
 
   return (
-    <p onClick={handleSentenceClick}>
-      {highlightedSentence} 
-    </p>
+    <div>
+      <p>{highlightedSentence}</p>
+      <PlayButton handleClick={handlePlaySound} />
+    </div>
   );
 }
 
