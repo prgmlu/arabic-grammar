@@ -1,0 +1,209 @@
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { setRules } from './RuleSlice';
+import GrammarTopic from './GrammarTopic';
+import RuleDisplay from './RuleDisplay';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { setRules } from './RuleSlice';
+import GrammarTopic from './GrammarTopic';
+import RuleDisplay from './RuleDisplay';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+function App() {
+  const dispatch = useDispatch();
+  
+  const mockFetchRules = () => [
+    { 
+      id: 1, 
+      topic: 'Noun Case Endings',
+      rule: 'In Arabic, nouns can have different case endings...',
+      highlightColor: '#FF0000', 
+      sound: 'https://tmpfiles.org/dl/1533068/alt-jbreezeblocks.mp3',
+      examples: [
+        {
+          sentence: 'This is a test sentence.',
+          highlightedIndices: [0, 1, 2]
+        },
+        {
+          sentence: 'This is another test sentence.',
+          highlightedIndices: [5, 6, 7]
+        }
+      ]
+    },
+    { 
+      id: 2, 
+      topic: 'Verb Conjugation',
+      rule: 'Arabic verbs change based on the subject...',
+      highlightColor: '#00FF00', 
+      sound: 'https://tmpfiles.org/dl/1533068/alt-jbreezeblocks.mp3', 
+      examples: [
+        {
+          sentence: 'This is a test sentence for verb conjugation.',
+          highlightedIndices: [0, 1, 2]
+        },
+        {
+          sentence: 'This is another test sentence for verb conjugation.',
+          highlightedIndices: [5, 6, 7]
+        }
+      ]
+    },
+    { 
+      id: 3, 
+      topic: 'Adjective Agreement',
+      rule: 'Adjectives in Arabic agree with the noun they modify...',
+      highlightColor: '#0000FF', 
+      sound: 'https://tmpfiles.org/dl/1533068/alt-jbreezeblocks.mp3', 
+      examples: [
+        {
+          sentence: 'This is a test sentence for adjective agreement.',
+          highlightedIndices: [0, 1, 2]
+        },
+        {
+          sentence: 'This is another test sentence for adjective agreement.',
+          highlightedIndices: [5, 6, 7]
+        }
+      ]
+    }
+  ];
+
+  useEffect(() => {
+    const rules = mockFetchRules();
+    dispatch(setRules(rules));
+  }, [dispatch]);
+
+  const rules = useSelector(state => state.rule);
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/:topicId" element={<RuleDisplay />} />
+        <Route path="/" element={<GrammarTopic />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
+
+
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import ruleReducer from './RuleSlice';
+import App from './App';
+import './index.css';
+
+const store = configureStore({
+  reducer: {
+    rule: ruleReducer
+  }
+});
+
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+);
+
+import { createSlice } from '@reduxjs/toolkit';
+
+const ruleSlice = createSlice({
+  name: 'rule',
+  initialState: [],
+  reducers: {
+    setRules: (state, action) => {
+      return action.payload;
+    }
+  }
+});
+
+export const { setRules } = ruleSlice.actions;
+
+export default ruleSlice.reducer;
+
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+
+function GrammarTopic() {
+  const rules = useSelector(state => state.rule);
+
+  return (
+    <ul>
+      {rules.map(rule => (
+        <li key={rule.id}>
+          <Link to={`/${rule.id}`}>{rule.topic}</Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export default GrammarTopic;
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import SentenceDisplay from './SentenceDisplay';
+
+function RuleDisplay() {
+  const { topicId } = useParams();
+  const rules = useSelector(state => state.rule);
+  const rule = rules.find(rule => rule.id === parseInt(topicId));
+
+  // If the rule is not found, display a loading message
+  if (!rule) return <div>Loading...</div>;
+
+  // Make sure that the rule has an examples array before trying to map over it
+  if (!rule.examples) return <div>No examples found for this rule.</div>;
+
+  return (
+    <div>
+      <h1>{rule.topic}</h1>
+      {rule.examples.map((example, index) => (
+        <SentenceDisplay key={index} example={example} rule={rule} />
+      ))}
+    </div>
+  );
+}
+
+
+export default RuleDisplay;
+
+
+
+import React, { useRef, useEffect } from 'react';
+
+function SentenceDisplay({ example, rule }) {
+  const audioRef = useRef();
+
+  useEffect(() => {
+    audioRef.current = new Audio(rule.sound);
+  }, [rule]);
+
+  const handleSentenceClick = () => {
+    audioRef.current.play();
+  };
+
+  const highlightedSentence = example.sentence.split('').map((char, index) => 
+    example.highlightedIndices.includes(index) 
+      ? <span style={{ color: rule.highlightColor, backgroundColor: 'lightgrey' }}>{char}</span> 
+      : char
+  );
+
+  return (
+    <p onClick={handleSentenceClick}>
+      {highlightedSentence} 
+    </p>
+  );
+}
+
+export default SentenceDisplay;
+
+please always provide copy/paste friendly code so i can just copy it to my previous structure and it works right away, please always provide no bugs
+
