@@ -1,8 +1,10 @@
+// App.js
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRules } from './RuleSlice';
 import GrammarTopic from './GrammarTopic';
 import RuleDisplay from './RuleDisplay';
+import MultiRuleDisplay from './MultiRuleDisplay';  // new import
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
@@ -79,6 +81,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/rules/:topicIds" element={<MultiRuleDisplay />} />  // new route
         <Route path="/:topicId" element={<RuleDisplay />} />
         <Route path="/" element={<GrammarTopic />} />
       </Routes>
