@@ -1,4 +1,3 @@
-// RuleDisplay.js
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -8,7 +7,7 @@ function RuleDisplay() {
   const { topicId } = useParams();
   const rules = useSelector(state => state.rule);
   const rule = rules.find(rule => rule.id === parseInt(topicId));
-  const [currentExampleIndex, setCurrentExampleIndex] = useState(0);  // new state
+  const [currentExampleIndex, setCurrentExampleIndex] = useState(0);
 
   // If the rule is not found, display a loading message
   if (!rule) return <div>Loading...</div>;
