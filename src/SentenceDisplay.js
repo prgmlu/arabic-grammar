@@ -14,7 +14,7 @@ function SentenceDisplay({ example, rule }) {
 
   const highlightedSentence = example.sentence.split('').map((char, index) => 
     example.highlightedIndices.includes(index) 
-      ? <span style={{ color: rule.highlightColor, backgroundColor: 'lightgrey' }}>{char}</span> 
+      ? <span key={index} style={{ color: rule.highlightColor, backgroundColor: 'lightgrey' }}>{char}</span> 
       : char
   );
 
