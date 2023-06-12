@@ -1,9 +1,9 @@
 React Rules Frontend
 This is a simple React-based frontend for managing language rules and examples. It uses Redux for state management, React-Router for routing, and interacts with the Django API backend to fetch data.
 
-git clone <your-repository-link>
-cd <your-project-name>
-npm install
+git clone https://github.com/prgmlu/arabic-grammar.git
+;cd arabic-grammar;
+npm install;
 npm start
 
 The frontend will be served at http://localhost:3000/.
