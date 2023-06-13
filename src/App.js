@@ -5,6 +5,7 @@ import GrammarTopic from './GrammarTopic';
 import RuleDisplay from './RuleDisplay';
 import MultiRuleDisplay from './MultiRuleDisplay';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './index.css';
 
 function App() {
   const dispatch = useDispatch();
@@ -25,11 +26,19 @@ function App() {
 
   return (
     <Router>
-      <Routes>
-        <Route path="/rules/:topicIds" element={<MultiRuleDisplay />} />
-        <Route path="/:topicId" element={<RuleDisplay />} />
-        <Route path="/" element={<GrammarTopic />} />
-      </Routes>
+      <header>
+        <h1>Grammar Rules</h1>
+      </header>
+      <main>
+        <Routes>
+          <Route path="/rules/:topicIds" element={<MultiRuleDisplay />} />
+          <Route path="/:topicId" element={<RuleDisplay />} />
+          <Route path="/" element={<GrammarTopic />} />
+        </Routes>
+      </main>
+      <footer>
+        <p>&copy; 2023 MyGrammarApp</p>
+      </footer>
     </Router>
   );
 }
