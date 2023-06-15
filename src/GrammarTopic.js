@@ -1,14 +1,14 @@
 // GrammarTopic.js
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';  // updated import
+import { Link, useNavigate } from 'react-router-dom';
 
 function GrammarTopic() {
   const rules = useSelector(state => state.rule);
-  const [selectedRules, setSelectedRules] = useState([]);  // new state
-  const navigate = useNavigate();  // new line
+  const [selectedRules, setSelectedRules] = useState([]);
+  const navigate = useNavigate();
 
-  const handleRuleSelect = (id) => {  // new function
+  const handleRuleSelect = (id) => {
     setSelectedRules(prev => {
       if (prev.includes(id)) {
         return prev.filter(ruleId => ruleId !== id);
@@ -18,7 +18,7 @@ function GrammarTopic() {
     });
   };
 
-  const handleGoClick = () => {  // new function
+  const handleGoClick = () => {
     navigate(`/rules/${selectedRules.join(',')}`);
   };
 

@@ -1,10 +1,9 @@
-// App.js
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRules } from './RuleSlice';
 import GrammarTopic from './GrammarTopic';
 import RuleDisplay from './RuleDisplay';
-import MultiRuleDisplay from './MultiRuleDisplay';  // new import
+import MultiRuleDisplay from './MultiRuleDisplay';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './index.css';
 
