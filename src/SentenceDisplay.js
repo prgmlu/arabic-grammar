@@ -5,8 +5,8 @@ function SentenceDisplay({ example, rule }) {
   const audioRef = useRef();
 
   useEffect(() => {
-    audioRef.current = new Audio(rule.sound);
-  }, [rule]);
+    audioRef.current = new Audio(example.audio_file);
+  }, [example]);
 
   const handlePlaySound = () => {
     audioRef.current.play();

@@ -1,29 +1,17 @@
 // App.js
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { setRules } from './RuleSlice';
-import GrammarTopic from './GrammarTopic';
-import RuleDisplay from './RuleDisplay';
-import MultiRuleDisplay from './MultiRuleDisplay';  // new import
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
 function App() {
   const dispatch = useDispatch();
-
   const fetchRulesFromBackend = () => {
     return fetch('http://localhost:8000/api/rules/')
       .then(response => response.json());
   };
   
-
   useEffect(() => {
     fetchRulesFromBackend().then((rules) => {
       dispatch(setRules(rules));
     });
   }, [dispatch]);
-
   const rules = useSelector(state => state.rule);
-
   return (
     <Router>
       <Routes>
@@ -34,32 +22,18 @@ function App() {
     </Router>
   );
 }
-
 export default App;
-
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
-import ruleReducer from './RuleSlice';
-import App from './App';
-import './index.css';
-
 const store = configureStore({
   reducer: {
     rule: ruleReducer
   }
 });
-
 ReactDOM.render(
   <Provider store={store}>
     <App />
   </Provider>,
   document.getElementById('root')
 );
-
-import { createSlice } from '@reduxjs/toolkit';
-
 const ruleSlice = createSlice({
   name: 'rule',
   initialState: [],
@@ -69,21 +43,13 @@ const ruleSlice = createSlice({
     }
   }
 });
-
 export const { setRules } = ruleSlice.actions;
-
 export default ruleSlice.reducer;
-
 // GrammarTopic.js
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';  // updated import
-
 function GrammarTopic() {
   const rules = useSelector(state => state.rule);
   const [selectedRules, setSelectedRules] = useState([]);  // new state
   const navigate = useNavigate();  // new line
-
   const handleRuleSelect = (id) => {  // new function
     setSelectedRules(prev => {
       if (prev.includes(id)) {
@@ -93,11 +59,9 @@ function GrammarTopic() {
       }
     });
   };
-
   const handleGoClick = () => {  // new function
     navigate(`/rules/${selectedRules.join(',')}`);
   };
-
   return (
     <div >
       <h1>Select Grammar Topics</h1>
@@ -117,39 +81,27 @@ function GrammarTopic() {
     </div>
   );
 }
-
 export default GrammarTopic;
-
 // RuleDisplay.js
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import SentenceDisplay from './SentenceDisplay';
-
 function RuleDisplay() {
   const { topicId } = useParams();
   const rules = useSelector(state => state.rule);
   const rule = rules.find(rule => rule.id === parseInt(topicId));
   const [currentExampleIndex, setCurrentExampleIndex] = useState(0);  // new state
-
   // If the rule is not found, display a loading message
   if (!rule) return <div>Loading...</div>;
-
   // Make sure that the rule has an examples array before trying to map over it
   if (!rule.examples) return <div>No examples found for this rule.</div>;
-
   const handleNextExample = () => {
     if (currentExampleIndex < rule.examples.length - 1) {
       setCurrentExampleIndex(currentExampleIndex + 1);
     }
   };
-
   const handlePrevExample = () => {
     if (currentExampleIndex > 0) {
       setCurrentExampleIndex(currentExampleIndex - 1);
     }
   };
-
   return (
     <div>
       <h1>{rule.topic}</h1>
@@ -159,47 +111,11 @@ function RuleDisplay() {
     </div>
   );
 }
-
 export default RuleDisplay;
-
-
-
-import React, { useRef, useEffect } from 'react';
-
-function SentenceDisplay({ example, rule }) {
-  const audioRef = useRef();
-
-  useEffect(() => {
-    audioRef.current = new Audio(rule.sound);
-  }, [rule]);
-
-  const handleSentenceClick = () => {
-    audioRef.current.play();
-  };
-
-  const highlightedSentence = example.sentence.split('').map((char, index) => 
-    example.highlightedIndices.includes(index) 
-      ? <span style={{ color: rule.highlightColor, backgroundColor: 'lightgrey' }}>{char}</span> 
-      : char
-  );
-
-  return (
-    <p onClick={handleSentenceClick}>
-      {highlightedSentence} 
-    </p>
-  );
-}
-
-export default SentenceDisplay;
-
-import React from 'react';
-
 function PlayButton({ handleClick }) {
   return <button onClick={handleClick}>Play</button>;
 }
-
 export default PlayButton;
-
 import React, { useRef, useEffect } from 'react';
 import PlayButton from './PlayButton';
 
@@ -207,8 +123,8 @@ function SentenceDisplay({ example, rule }) {
   const audioRef = useRef();
 
   useEffect(() => {
-    audioRef.current = new Audio(rule.sound);
-  }, [rule]);
+    audioRef.current = new Audio(example.audio_file);
+  }, [example]);
 
   const handlePlaySound = () => {
     audioRef.current.play();
@@ -216,7 +132,7 @@ function SentenceDisplay({ example, rule }) {
 
   const highlightedSentence = example.sentence.split('').map((char, index) => 
     example.highlightedIndices.includes(index) 
-      ? <span style={{ color: rule.highlightColor, backgroundColor: 'lightgrey' }}>{char}</span> 
+      ? <span key={index} style={{ color: rule.highlightColor, backgroundColor: 'lightgrey' }}>{char}</span> 
       : char
   );
 
@@ -231,23 +147,15 @@ function SentenceDisplay({ example, rule }) {
 export default SentenceDisplay;
 
 // MultiRuleDisplay.js
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import SentenceDisplay from './SentenceDisplay';
-
 function MultiRuleDisplay() {
   const { topicIds } = useParams();
   const rules = useSelector(state => state.rule);
   const selectedRules = rules.filter(rule => topicIds.split(',').includes(rule.id.toString()));
   const [currentRuleIndex, setCurrentRuleIndex] = useState(0);
   const [currentExampleIndex, setCurrentExampleIndex] = useState(0);
-
   const currentRule = selectedRules[currentRuleIndex];
-
   // If the rule is not found, display a loading message
   if (!currentRule) return <div>Loading...</div>;
-
   const handleNextExample = () => {
     if (currentExampleIndex < currentRule.examples.length - 1) {
       setCurrentExampleIndex(currentExampleIndex + 1);
@@ -256,7 +164,6 @@ function MultiRuleDisplay() {
       setCurrentExampleIndex(0);
     }
   };
-
   const handlePrevExample = () => {
     if (currentExampleIndex > 0) {
       setCurrentExampleIndex(currentExampleIndex - 1);
@@ -265,7 +172,6 @@ function MultiRuleDisplay() {
       setCurrentExampleIndex(selectedRules[currentRuleIndex - 1].examples.length - 1);
     }
   };
-
   return (
     <div>
       <h1>{currentRule.topic}</h1>
@@ -275,11 +181,7 @@ function MultiRuleDisplay() {
     </div>
   );
 }
-
 export default MultiRuleDisplay;
 
-
-
 please always provide copy/paste friendly code so i can just copy it to my previous structure and it works right away, please always provide no bugs
-please feel free to treat this code as it is yours, so edit left and right IF needed, just make sure to plan it out correctly , then provide copy/paste friendly code as mentioned above as one of the top criterias(please always keep this criters from now on in all of your replies (important))
 please never say "//... other code remains the same ..." other similar comments, always fill in yourself
